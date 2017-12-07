@@ -14,5 +14,16 @@ import java.util.Calendar;
 public class ReactChatVerticle extends AbstractVerticle {
 
     public static final int PORT = 8667;
-    
+
+    @Override
+    public void start() throws Exception {
+
+
+        Router router = Router.router(vertx);
+        router.get("/react/alive").handler(r -> r.response().end("I AM ALIVE"));
+
+        vertx.createHttpServer().requestHandler(router::accept).listen(PORT);
+
+    }
+
 }
