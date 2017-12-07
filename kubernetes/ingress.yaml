@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: vertx-frontend-ingress
+spec:
+  rules:
+  - http:
+     paths:
+     - path: /simple
+       backend:
+         serviceName: vertx-frontend
+         servicePort: 8666
+     - path: /react
+       backend:
+         serviceName: vertx-frontend
+         servicePort: 8667
+     - path: /kubernetes
+       backend:
+         serviceName: vertx-frontend
+         servicePort: 8668

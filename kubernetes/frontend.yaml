@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: vertx-frontend
+  labels:
+    app: vertx-frontend
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  minReadySeconds: 60
+  template:
+    metadata:
+      name: vertx-frontend
+      labels:
+        app: vertx-frontend
+        hazelcast: h1
+
+    spec:
+      containers:
+      - name: vertx-frontend
+
+        image: codepitbull/vertx-java-kubernetes-frontend:latest
+        imagePullPolicy: Never
+
+        ports:
+        - name: simplefrontend
+          containerPort: 8666
+          protocol: TCP
+        - name: reactfrontend
+          containerPort: 8667
+          protocol: TCP
+        - name: k8sfrontend
+          containerPort: 8668
+          protocol: TCP
+
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "500Mi"
+          requests:
+            cpu: "500m"
+            memory: "500Mi"
