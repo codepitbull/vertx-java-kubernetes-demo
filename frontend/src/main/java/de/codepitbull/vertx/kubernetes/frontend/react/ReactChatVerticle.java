@@ -28,11 +28,18 @@ public class ReactChatVerticle extends AbstractVerticle {
 
         vertx.eventBus()
             .<String>consumer("server")
-            .handler(msg ->
-                sender.write(new JsonObject()
-                    .put("msg", msg.body())
-                    .put("date", Calendar.getInstance().getTime().toString())));
-
+            .toFlowable()
+            .map(msg -> vertx.eventBus().<String>rxSend("profanitycheck", msg.body()))
+            .subscribe(res ->
+                res.subscribe(
+                    answer -> sender.write(new JsonObject()
+                        .put("msg", answer.body())
+                        .put("date", Calendar.getInstance().getTime().toString())),
+                    failure -> sender.write(new JsonObject()
+                        .put("msg", "----BIG BROTHER ISN'T WATCHING----")
+                        .put("date", Calendar.getInstance().getTime().toString()))
+                )
+            );
 
         vertx.createHttpServer().requestHandler(router::accept).listen(PORT);
 

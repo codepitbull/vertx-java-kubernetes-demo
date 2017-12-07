@@ -2,7 +2,6 @@ package de.codepitbull.vertx.kubernetes.backend;
 
 import io.vertx.reactivex.core.AbstractVerticle;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,11 +20,11 @@ public class ProfanityFilterVerticle extends AbstractVerticle {
                 .map(msg -> tuple(msg, List.of(msg.body().split(" "))))
                 .map(msgAndStrings -> {
                     List<String> filtered = msgAndStrings.y.stream()
-                            .map(wordFromUSer -> {
-                                if(blockList.contains(wordFromUSer))
+                            .map(wordFromUser -> {
+                                if(blockList.contains(wordFromUser.toLowerCase()))
                                     return "---BIG BROTHER DOESN'T APPROVE---";
                                 else
-                                    return wordFromUSer;
+                                    return wordFromUser;
                             }).collect(Collectors.toList());
                     return tuple(msgAndStrings.x, String.join(" ", filtered));
                 })
