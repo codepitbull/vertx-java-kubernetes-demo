@@ -24,6 +24,16 @@ public class ReactChatVerticle extends AbstractVerticle {
         router.route("/react/static/*").handler(StaticHandler.create("webroot-react"));
         router.route("/react/eventbus/*").handler(sockJsHandler());
 
+        MessageProducer sender = vertx.eventBus().publisher("browser");
+
+        vertx.eventBus()
+            .<String>consumer("server")
+            .handler(msg ->
+                sender.write(new JsonObject()
+                    .put("msg", msg.body())
+                    .put("date", Calendar.getInstance().getTime().toString())));
+
+
         vertx.createHttpServer().requestHandler(router::accept).listen(PORT);
 
     }
