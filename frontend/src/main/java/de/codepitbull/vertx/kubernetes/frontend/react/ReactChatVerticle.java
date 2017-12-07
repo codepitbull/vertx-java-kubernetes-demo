@@ -21,9 +21,20 @@ public class ReactChatVerticle extends AbstractVerticle {
 
         Router router = Router.router(vertx);
         router.get("/react/alive").handler(r -> r.response().end("I AM ALIVE"));
+        router.route("/react/static/*").handler(StaticHandler.create("webroot-react"));
+        router.route("/react/eventbus/*").handler(sockJsHandler());
 
         vertx.createHttpServer().requestHandler(router::accept).listen(PORT);
 
+    }
+
+    public SockJSHandler sockJsHandler() {
+        SockJSHandler sockJSHandler = SockJSHandler.create(vertx);
+        BridgeOptions options = new BridgeOptions()
+            .addOutboundPermitted(new PermittedOptions().setAddress("browser"))
+            .addInboundPermitted(new PermittedOptions().setAddress("server"));
+        sockJSHandler.bridge(options);
+        return sockJSHandler;
     }
 
 }
